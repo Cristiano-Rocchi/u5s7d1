@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 public record NewDipendenteDTO(
-
         @NotEmpty(message = "Il nome è obbligatorio")
         @Size(min = 2, max = 20, message = "Il nome deve essere compreso tra 2 e 20 caratteri")
         String nome,
@@ -20,11 +19,13 @@ public record NewDipendenteDTO(
         @Size(min = 3, max = 20, message = "L'username deve essere compreso tra 3 e 20 caratteri")
         String username,
 
-        @NotEmpty(message = "email obbligatoria")
-        @Email(message = "email inserita non è valida")
+        @NotEmpty(message = "Email obbligatoria")
+        @Email(message = "Email inserita non è valida")
         String email,
 
-        String immagineProfilo
+        String immagineProfilo,
 
+        @NotEmpty(message = "Password obbligatoria")
+        @Size(min = 6, message = "La password deve avere almeno 6 caratteri")
+        String password
 ) {}
-

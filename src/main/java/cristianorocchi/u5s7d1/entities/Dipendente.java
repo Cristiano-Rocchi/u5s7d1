@@ -34,6 +34,4 @@ public class Dipendente {
     @Column(nullable = false)
     private String password;
 
-
 }
-
