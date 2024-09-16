@@ -1,7 +1,5 @@
 package cristianorocchi.u5s7d1.controller;
 
-
-
 import cristianorocchi.u5s7d1.entities.Dipendente;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,14 +32,14 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public NewDipendenteDTO save(@RequestBody @Validated NewDipendenteDTO body, BindingResult validationResult) {
+    public NewDipendenteDTO save(@Validated @RequestBody NewDipendenteDTO body, BindingResult validationResult) {
         if (validationResult.hasErrors()) {
             String messages = validationResult.getAllErrors().stream()
                     .map(objectError -> objectError.getDefaultMessage())
                     .collect(Collectors.joining(". "));
             throw new BadRequestException("Ci sono stati errori nel payload. " + messages);
         } else {
-
+            // Creazione del nuovo dipendente utilizzando i dati del DTO
             Dipendente dipendente = new Dipendente();
             dipendente.setNome(body.nome());
             dipendente.setCognome(body.cognome());
@@ -49,13 +47,16 @@ public class AuthController {
             dipendente.setEmail(body.email());
             dipendente.setImmagineProfilo(body.immagineProfilo());
 
-
+            // Salva il nuovo dipendente e restituisce il DTO di risposta
             Dipendente dipendenteSalvato = this.dipendenteService.salva(dipendente);
 
-
-            return new NewDipendenteDTO(dipendenteSalvato.getNome(), dipendenteSalvato.getCognome(), dipendenteSalvato.getUsername(), dipendenteSalvato.getEmail(), dipendenteSalvato.getImmagineProfilo());
+            return new NewDipendenteDTO(
+                    dipendenteSalvato.getNome(),
+                    dipendenteSalvato.getCognome(),
+                    dipendenteSalvato.getUsername(),
+                    dipendenteSalvato.getEmail(),
+                    dipendenteSalvato.getImmagineProfilo()
+            );
         }
     }
-
 }
-
