@@ -59,7 +59,7 @@ public class DipendenteService {
     }
 
     public Dipendente uploadImmagineProfilo(Long dipendenteId, MultipartFile file) throws IOException {
-        // Verifica se il file è vuoto
+
         if (file.isEmpty()) {
             throw new BadRequestException("immagine obbligatoria.");
         }
@@ -79,4 +79,10 @@ public class DipendenteService {
 
         return dipendenteRepository.save(dipendente);
     }
+
+    public Dipendente findByEmail(String email) {
+        return dipendenteRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Dipendente con email " + email + " non trovato"));
+    }
+
 }

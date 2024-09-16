@@ -30,5 +30,10 @@ public class Dipendente {
 
     @Column
     private String immagineProfilo;
+
+    @Column(nullable = false)
+    private String password;
+
+
 }
 
