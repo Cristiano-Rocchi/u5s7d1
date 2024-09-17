@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -60,6 +61,7 @@ public class DipendenteController {
     }
 
     @PutMapping("/{dipendenteId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Dipendente aggiornaDipendente(@PathVariable Long dipendenteId, @Valid @RequestBody NewDipendenteDTO newDipendenteDTO) {
         Dipendente esistente = dipendenteService.trovaPerId(dipendenteId);
         if (esistente == null) {
@@ -76,6 +78,7 @@ public class DipendenteController {
     }
 
     @DeleteMapping("/{dipendenteId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void cancellaDipendente(@PathVariable Long dipendenteId) {
         try {
