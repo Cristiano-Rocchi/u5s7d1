@@ -1,6 +1,7 @@
 package cristianorocchi.u5s7d1.controller;
 
 import cristianorocchi.u5s7d1.entities.Dipendente;
+import cristianorocchi.u5s7d1.enums.Role;
 import cristianorocchi.u5s7d1.exceptions.BadRequestException;
 import cristianorocchi.u5s7d1.payloads.NewDipendenteDTO;
 import cristianorocchi.u5s7d1.payloads.NewDipendenteRespDTO;  // Aggiunto DTO di risposta per la registrazione
@@ -49,6 +50,7 @@ public class AuthController {
             dipendente.setEmail(body.email());
             dipendente.setImmagineProfilo(body.immagineProfilo());
             dipendente.setPassword(body.password());
+            dipendente.setRuolo(Role.USER);
 
             // Salva il nuovo dipendente e restituisce il DTO di risposta
             Dipendente dipendenteSalvato = this.dipendenteService.salva(dipendente);
