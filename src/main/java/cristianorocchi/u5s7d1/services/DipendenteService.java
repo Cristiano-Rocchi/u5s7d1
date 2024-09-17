@@ -9,6 +9,7 @@ import cristianorocchi.u5s7d1.repositories.DipendenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,9 @@ public class DipendenteService {
 
     @Autowired
     private Cloudinary cloudinaryUploader;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<Dipendente> trovaTutti() {
         return dipendenteRepository.findAll();

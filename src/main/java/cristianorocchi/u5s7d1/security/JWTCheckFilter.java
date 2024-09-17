@@ -1,6 +1,7 @@
 package cristianorocchi.u5s7d1.security;
 
 import cristianorocchi.u5s7d1.entities.Dipendente;
+import cristianorocchi.u5s7d1.exceptions.UnauthorizedException;
 import cristianorocchi.u5s7d1.services.DipendenteService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,22 +14,26 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
-import cristianorocchi.u5s7d1.exceptions.UnauthorizedException;
 
 import java.io.IOException;
+
 
 @Component
 public class JWTCheckFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JWTTools jwtTools;
+    private final JWTTools jwtTools;
+    private final DipendenteService dipendenteService;
 
     @Autowired
-    private DipendenteService dipendenteService;
+    public JWTCheckFilter(JWTTools jwtTools, DipendenteService dipendenteService) {
+        this.jwtTools = jwtTools;
+        this.dipendenteService = dipendenteService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new UnauthorizedException("Per favore inserisci correttamente il token nell'Authorization Header");
         }

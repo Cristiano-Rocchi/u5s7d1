@@ -1,5 +1,6 @@
 package cristianorocchi.u5s7d1.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import cristianorocchi.u5s7d1.enums.Role;
 import jakarta.persistence.*;
@@ -40,6 +41,7 @@ public class Dipendente implements UserDetails {
     @Column
     private String immagineProfilo;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
@@ -47,17 +49,33 @@ public class Dipendente implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role ruolo = Role.USER;
 
-
-
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
         return List.of(new SimpleGrantedAuthority(this.ruolo.name()));
     }
 
     @Override
-    public String getUsername() {
-        return this.email;
+    @JsonIgnore
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isEnabled() {
+        return true;
+    }
 }
