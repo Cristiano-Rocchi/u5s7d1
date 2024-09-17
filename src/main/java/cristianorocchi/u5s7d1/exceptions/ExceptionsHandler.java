@@ -2,12 +2,15 @@ package cristianorocchi.u5s7d1.exceptions;
 
 
 
+import cristianorocchi.u5s7d1.payloads.ErrorsResponseDTO;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.LocalDateTime;
 
 
 @RestControllerAdvice
@@ -18,6 +21,12 @@ public class ExceptionsHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorsPayload handleUnauthorizedException(UnauthorizedException ex) {
         return new ErrorsPayload(ex.getMessage());
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN) // 403
+    public ErrorsResponseDTO handleForbidden(AuthorizationDeniedException ex) {
+        return new ErrorsResponseDTO("Non hai i permessi per accedere", LocalDateTime.now());
     }
 
 

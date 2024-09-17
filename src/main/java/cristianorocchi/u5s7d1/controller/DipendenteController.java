@@ -4,7 +4,7 @@ import cristianorocchi.u5s7d1.entities.Dipendente;
 import cristianorocchi.u5s7d1.payloads.NewDipendenteDTO;
 import cristianorocchi.u5s7d1.services.DipendenteService;
 import cristianorocchi.u5s7d1.exceptions.BadRequestException;
-import cristianorocchi.u5s7d1.exceptions.NotFoundException;
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,7 +26,7 @@ public class DipendenteController {
     private DipendenteService dipendenteService;
 
     @GetMapping
-    public Page<Dipendente> trovaTuttiDipendentiPageable(
+    public Page<Dipendente> trovaTuttiDipendenti(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy) {
@@ -37,21 +37,8 @@ public class DipendenteController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Dipendente creaDipendente(@Valid @RequestBody NewDipendenteDTO newDipendenteDTO) {
-        // Verifica campi obbligatori
-        if (newDipendenteDTO.email() == null || newDipendenteDTO.email().isEmpty()) {
-            throw new BadRequestException("L'email del dipendente è obbligatoria.");
-        }
-        if (newDipendenteDTO.username() == null || newDipendenteDTO.username().isEmpty()) {
-            throw new BadRequestException("L'username del dipendente è obbligatorio.");
-        }
-
-        Dipendente dipendente = new Dipendente();
-        dipendente.setNome(newDipendenteDTO.nome());
-        dipendente.setCognome(newDipendenteDTO.cognome());
-        dipendente.setUsername(newDipendenteDTO.username());
-        dipendente.setEmail(newDipendenteDTO.email());
-        dipendente.setImmagineProfilo(newDipendenteDTO.immagineProfilo());
-
+        validaDipendenteDTO(newDipendenteDTO);
+        Dipendente dipendente = mappaDTOaDipendente(newDipendenteDTO);
         return dipendenteService.salva(dipendente);
     }
 
@@ -63,37 +50,52 @@ public class DipendenteController {
     @PutMapping("/{dipendenteId}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public Dipendente aggiornaDipendente(@PathVariable Long dipendenteId, @Valid @RequestBody NewDipendenteDTO newDipendenteDTO) {
-        Dipendente esistente = dipendenteService.trovaPerId(dipendenteId);
-        if (esistente == null) {
-            throw new NotFoundException("Dipendente non trovato con ID: " + dipendenteId);
-        }
-
-        esistente.setUsername(newDipendenteDTO.username());
-        esistente.setNome(newDipendenteDTO.nome());
-        esistente.setCognome(newDipendenteDTO.cognome());
-        esistente.setEmail(newDipendenteDTO.email());
-        esistente.setImmagineProfilo(newDipendenteDTO.immagineProfilo());
-
-        return dipendenteService.salva(esistente);
+        Dipendente dipendenteEsistente = dipendenteService.trovaPerId(dipendenteId);
+        aggiornaDipendenteDaDTO(dipendenteEsistente, newDipendenteDTO);
+        return dipendenteService.salva(dipendenteEsistente);
     }
 
     @DeleteMapping("/{dipendenteId}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void cancellaDipendente(@PathVariable Long dipendenteId) {
-        try {
-            dipendenteService.cancella(dipendenteId);
-        } catch (NotFoundException e) {
-            throw new NotFoundException("Dipendente " + dipendenteId + " non trovato " );
-        }
+        dipendenteService.cancella(dipendenteId);
     }
 
     @PostMapping("/{dipendenteId}/img")
     @ResponseStatus(HttpStatus.OK)
-    public Dipendente uploadImmagineProfilo(@PathVariable Long dipendenteId, @RequestParam("img") MultipartFile file) throws IOException {
+    public Dipendente caricaImmagineProfilo(@PathVariable Long dipendenteId, @RequestParam("img") MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             throw new BadRequestException("Il file dell'immagine è obbligatorio.");
         }
         return dipendenteService.uploadImmagineProfilo(dipendenteId, file);
+    }
+
+    // Metodi di utilità privata
+    private void validaDipendenteDTO(NewDipendenteDTO dto) {
+        if (dto.email() == null || dto.email().isEmpty()) {
+            throw new BadRequestException("L'email del dipendente è obbligatoria.");
+        }
+        if (dto.username() == null || dto.username().isEmpty()) {
+            throw new BadRequestException("L'username del dipendente è obbligatorio.");
+        }
+    }
+
+    private Dipendente mappaDTOaDipendente(NewDipendenteDTO dto) {
+        Dipendente dipendente = new Dipendente();
+        dipendente.setNome(dto.nome());
+        dipendente.setCognome(dto.cognome());
+        dipendente.setUsername(dto.username());
+        dipendente.setEmail(dto.email());
+        dipendente.setImmagineProfilo(dto.immagineProfilo());
+        return dipendente;
+    }
+
+    private void aggiornaDipendenteDaDTO(Dipendente dipendente, NewDipendenteDTO dto) {
+        dipendente.setUsername(dto.username());
+        dipendente.setNome(dto.nome());
+        dipendente.setCognome(dto.cognome());
+        dipendente.setEmail(dto.email());
+        dipendente.setImmagineProfilo(dto.immagineProfilo());
     }
 }

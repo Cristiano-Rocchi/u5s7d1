@@ -16,19 +16,24 @@ public class JWTTools {
     private String secret;
 
     public String createToken(Dipendente dipendente) {
+        // Genera un token per il dipendente
         return Jwts.builder()
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
-                .subject(String.valueOf(dipendente.getId()))
-                .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                .issuedAt(new Date(System.currentTimeMillis())) // Data di emissione del token (IAT - Issued At)
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)) // Data di scadenza del token
+                .subject(String.valueOf(dipendente.getId())) // Subject, ovvero a chi appartiene il token
+                .signWith(Keys.hmacShaKeyFor(secret.getBytes())) // Firma il token con un algoritmo e il segreto
                 .compact();
     }
 
-    public void verifyToken(String token) { // Verifica il token
+
+    public void verifyToken(String token) { // Dato un token verificami se è valido (non manipolato e non scaduto)
+        // Per fare le verifiche useremo ancora una volta la libreria jsonwebtoken, la quale lancerà delle eccezioni in caso di problemi col token
+        // Queste eccezioni dovranno "trasformarsi" in un 401
         try {
-            Jwts.parser().setSigningKey(Keys.hmacShaKeyFor(secret.getBytes())).build().parseClaimsJws(token);
+            Jwts.parser().verifyWith(Keys.hmacShaKeyFor(secret.getBytes())).build().parse(token);
         } catch (Exception ex) {
-            // Gestione dell'eccezione per token non valido
+            // Non importa se l'eccezione lanciata da .parse() sia dovuta a token scaduto oppure manipolato oppure malformato, per noi dovranno tutte
+            // risultare in un 401
             System.out.println(ex.getMessage());
             throw new UnauthorizedException("Problemi col token! Per favore effettua di nuovo il login!");
         }
@@ -38,5 +43,3 @@ public class JWTTools {
         return Jwts.parser().verifyWith(Keys.hmacShaKeyFor(secret.getBytes())).build().parseSignedClaims(accessToken).getPayload().getSubject(); // Il subject è l'id dell'utente
     }
 }
-
-
