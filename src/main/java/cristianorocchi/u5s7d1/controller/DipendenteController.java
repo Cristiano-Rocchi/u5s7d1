@@ -71,8 +71,8 @@ public class DipendenteController {
         return dipendenteService.uploadImmagineProfilo(dipendenteId, file);
     }
 
-    // Metodi di utilità privata
-    private void validaDipendenteDTO(NewDipendenteDTO dto) {
+
+    public void validaDipendenteDTO(NewDipendenteDTO dto) {
         if (dto.email() == null || dto.email().isEmpty()) {
             throw new BadRequestException("L'email del dipendente è obbligatoria.");
         }
@@ -81,7 +81,7 @@ public class DipendenteController {
         }
     }
 
-    private Dipendente mappaDTOaDipendente(NewDipendenteDTO dto) {
+    public Dipendente mappaDTOaDipendente(NewDipendenteDTO dto) {
         Dipendente dipendente = new Dipendente();
         dipendente.setNome(dto.nome());
         dipendente.setCognome(dto.cognome());
@@ -91,7 +91,7 @@ public class DipendenteController {
         return dipendente;
     }
 
-    private void aggiornaDipendenteDaDTO(Dipendente dipendente, NewDipendenteDTO dto) {
+    public void aggiornaDipendenteDaDTO(Dipendente dipendente, NewDipendenteDTO dto) {
         dipendente.setUsername(dto.username());
         dipendente.setNome(dto.nome());
         dipendente.setCognome(dto.cognome());

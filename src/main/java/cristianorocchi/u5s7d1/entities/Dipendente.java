@@ -1,5 +1,6 @@
 package cristianorocchi.u5s7d1.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import cristianorocchi.u5s7d1.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,6 +17,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"password", "role", "authorities", "enabled", "accountNonLocked", "accountNonExpired", "credentialsNonExpired"})
 public class Dipendente implements UserDetails {
 
     @Id
